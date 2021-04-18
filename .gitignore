@@ -91,3 +91,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+# custom (waleed)
+static/img
+static/uploaded

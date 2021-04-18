@@ -15,12 +15,14 @@ if __name__=="__main__":
     img_paths = []
 
     # Append every generated PKL file into an array and the image version as well
-    for feature_path in glob.glob("static/feature/*"):
+    for feature_path in glob.glob("static\\feature\\*"):
+        print (feature_path)
         features.append(pickle.load(open(feature_path, 'rb')))
-        img_paths.append('static/img/' + os.path.splitext(os.path.basename(feature_path))[0] + '.jpg')
+        img_paths.append('./static/img/' + os.path.splitext(os.path.basename(feature_path))[0] + '.jpg')
 
     # Define the query image, in our case it will be a hamburguer
-    img = Image.open("/mnt/c/Users/wmr12/Picture\zoe.jpg")  # PIL image
+    path = "c://Users//wmr12//Picture//zoe.jpg"
+    img = Image.open(path)  # PIL image
 
     # Search for matches
     query = fe.extract(img)

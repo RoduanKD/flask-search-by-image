@@ -29,4 +29,3 @@ class FeatureExtractor:
         x = preprocess_input(x)  # Subtracting avg values for each pixel
         feature = self.model.predict(x)[0]  # (1, 4096) -> (4096, )
         return feature / np.linalg.norm(feature)  # Normalize
-
