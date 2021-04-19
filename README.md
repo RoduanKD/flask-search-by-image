@@ -59,3 +59,8 @@ python server.py
 
 
 ## Waleeds project
+
+Auto reloading python Flask app upon code changes:
+Type this in the terminal  FLASK_APP=app.py FLASK_ENV=development flask run
+
+[Stackoverflow](https://stackoverflow.com/questions/16344756/auto-reloading-python-flask-app-upon-code-changes)
