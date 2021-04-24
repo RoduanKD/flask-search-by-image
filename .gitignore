@@ -96,3 +96,6 @@ ENV/
 # custom (waleed)
 static/img
 static/uploaded
+
+#vs code
+.vscode
