@@ -4,16 +4,13 @@ from pathlib import Path
 import numpy as np
 
 
-def extract_features_in_path(images_path=""):
-    fe = FeatureExtractor()
+def extract_features_in_path(images_path):
+    feature_extractor = FeatureExtractor()
     for img_path in images_path:
         print(img_path)
-        feature = fe.extract(img=Image.open(img_path))
+        feature = feature_extractor.extract(img=Image.open(img_path))
         feature_path = Path("./static/feature") / (img_path.stem + ".npy")
         np.save(feature_path, feature)
-    
-
-
 
 if __name__ == '__main__':
     fe = FeatureExtractor()

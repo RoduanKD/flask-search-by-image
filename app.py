@@ -45,14 +45,13 @@ def index():
     else:
         return render_template('index.html')
 
-
 @app.route('/api/v1/detect', methods=['POST'])
 def detect():
     request_data = request.get_json()
     image_path = None
     if request_data:
         if 'image' in request_data:
-            img_path = request_data['image']
+            img_path = request_data['image'] #json path
             response = requests.get(img_path)
 
             file = open("img.png", "rb+")
@@ -115,7 +114,7 @@ def train():
             images_downloader(request_data['images'])
             # os.chdir(os.getcwd()+"/static/img")
             #TODO: revisit this function
-            # extract_features_in_path(filePath = os.getcwdb())
+            extract_features_in_path(filePath = os.getcwdb())
 
             response = make_response(
                 jsonify({"training_status":"done"}),
@@ -149,4 +148,4 @@ def not_found(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='127.0.0.1')
+    app.run(debug=False, host='127.0.0.1')
