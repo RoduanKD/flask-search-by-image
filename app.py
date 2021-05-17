@@ -17,7 +17,8 @@ features = []
 img_paths = []
 for feature_path in Path("./static/feature").glob("*.npy"):
     features.append(np.load(feature_path))
-    img_paths.append(Path("./static/img") / (feature_path.stem + ".jpg"))
+    # img_paths.append(Path("./static/img") / (feature_path.stem))
+    img_paths.append(feature_path.stem) #TODO change to product ID 
 features = np.array(features)
 
 
@@ -74,8 +75,8 @@ def detect():
 
             for item in scores:
                 results.append({
-                    "filename": str(item[1]),
-                    "uncertainty": str(item[0])
+                    "product_id": str(item[1]),
+                    # "uncertainty": str(item[0])
                 })
 
             print(jsonify(results))
