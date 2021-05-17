@@ -2,21 +2,20 @@ from PIL import Image
 from feature_extractor import FeatureExtractor
 from pathlib import Path
 import numpy as np
+import os
 
-
-def extract_features_in_path(images_path):
+def extract_features_in_path(saved_images_path):
     feature_extractor = FeatureExtractor()
-    for img_path in images_path:
-        print(img_path)
-        feature = feature_extractor.extract(img=Image.open(img_path))
-        feature_path = Path("./static/feature") / (img_path.stem + ".npy")
-        np.save(feature_path, feature)
+    print( " extract_features_in_path: "  + saved_images_path)
+    for img_path in os.scandir(saved_images_path):
+        if (img_path.path.endswith("jpg")
+                or img_path.path.endswith("png") and img_path.is_file()):
+            feature = feature_extractor.extract(img=Image.open(img_path.path))
+
+            new_file_path_after_training = img_path.name[ :-5] + "1" + img_path.name[-4:] #flip 0 to 1 to indicate image has been trained
+            os.rename( img_path.name,  new_file_path_after_training)
+            feature_path = Path("../feature") / (new_file_path_after_training.split(".") [0]+ ".npy")
+            np.save(feature_path, feature)
 
 if __name__ == '__main__':
-    fe = FeatureExtractor()
-
-    for img_path in sorted(Path("./static/img").glob("*.jpg")):
-        print(img_path)  # e.g., ./static/img/xxx.jpg
-        feature = fe.extract(img=Image.open(img_path))
-        feature_path = Path("./static/feature") / (img_path.stem + ".npy")  # e.g., ./static/feature/xxx.npy
-        np.save(feature_path, feature)
+    extract_features_in_path("C:\\dev\\workspace\\python\\sis\\static\\img\\")

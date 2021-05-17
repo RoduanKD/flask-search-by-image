@@ -115,7 +115,7 @@ def train():
             images_downloader(request_data['images'])
             # os.chdir(os.getcwd()+"/static/img")
             #TODO: revisit this function
-            extract_features_in_path(filePath = os.getcwdb())
+            extract_features_in_path(os.getcwd())
 
             response = make_response(
                 jsonify({"training_status":"done"}),
