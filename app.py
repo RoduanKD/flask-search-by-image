@@ -55,13 +55,13 @@ def detect():
             img_path = request_data['image'] #json path
             response = requests.get(img_path)
 
+            #TODO: Idea, rename files to cache imgs
             file = open("img.png", "rb+")
             file.write(response.content)
 
             # Save query image
             img = Image.open(file)  # PIL image
-            # uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":", ".") + "_" + img
-            # img.save(uploaded_img_path)
+
 
             # Run search
             query = fe.extract(img)
@@ -70,16 +70,12 @@ def detect():
             ids = np.argsort(dists)[:30]  # Top 30 results
             scores = [(dists[id], img_paths[id]) for id in ids]
 
-            # Store results in a dictionary
+
             results = []
 
             for item in scores:
-                results.append({
-                    "product_id": str(item[1]),
-                    # "uncertainty": str(item[0])
-                })
+                results.append(str(item[1]))
 
-            print(jsonify(results))
             response = make_response(
                 jsonify(results),
                 200,

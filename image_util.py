@@ -33,7 +33,7 @@ def download_images_parallel(url, filePath):
             # print(" Downloaded {} ".format(file_name))
         else:
         # We will write all of the images back to the broken_images list:
-            broken_images.append(img)
+            broken_images.append(url)
             
                
     except Exception as e:
