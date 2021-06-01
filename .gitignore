@@ -97,6 +97,8 @@ ENV/
 static/img/
 static/uploaded/
 static/feature/
+static/trained/
+static/pretrained/
 
 #vs code
 .vscode

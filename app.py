@@ -104,7 +104,6 @@ def detect():
 @app.route('/api/v1/train', methods=['POST'])
 def train():
     request_data = request.get_json()
-    image_path = None
     if request_data:
         if 'images' in request_data:
             #1 - download_images

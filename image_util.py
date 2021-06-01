@@ -1,3 +1,4 @@
+import time
 import sys, os
 import requests
 from multiprocessing import Pool, cpu_count
@@ -19,21 +20,21 @@ def delete_directory_files(directory):
 
 
 
-def download_images_parallel(url, filePath):
+def download_images_parallel(product):
     broken_images = []
     try:
-        file_name = url.split("/")[-1]
-        response = requests.get(url,stream=True)
+        response = requests.get(product['image'],stream=True)
         if response.status_code == 200:
-        # This command below will allow us to write the data to a file as binary:
-            with open(file_name, 'wb') as f:
+            file_name = product['product_id'] + '_' + product['color_id'] + '_' + product['size_id'] + '_' + str(time.time()).split('.')[0]
+            # This command below will allow us to write the data to a file as binary:
+            with open(file_name, 'wb+') as f:
                 for chunk in response:
                     f.write(chunk)
                     
             # print(" Downloaded {} ".format(file_name))
         else:
         # We will write all of the images back to the broken_images list:
-            broken_images.append(url)
+            broken_images.append(product['image'])
             
                
     except Exception as e:
@@ -41,12 +42,14 @@ def download_images_parallel(url, filePath):
         
 
 def download_images_parallel_starting_point(images_urls_list=[]):
-    os.chdir(os.getcwd()+"/static/img")
+    # TODO: imrpove later
+    if (os.getcwd().split('/')[-1] != 'img'):
+        os.chdir(os.getcwd()+"/static/img")
     print("dir changed to /img")
     # filePath = os.path.dirname(os.path.abspath(__file__))
     # filePath = os.path.dirname(os.path.abspath(os.getcwd()))
     filePath = os.getcwdb()
-    print("filesPath fot downloading images is %s " % filePath)
+    print("filesPath for downloading images is %s " % filePath)
     # sys.path.append(filePath) # why do you need this?
     # urls = [
     #     'https://sempioneer.com/wp-content/uploads/2020/05/dataframe-300x84.png',
@@ -64,7 +67,7 @@ def download_images_parallel_starting_point(images_urls_list=[]):
 
     print("There are {} CPUs on this machine ".format(cpu_count()))
     pool = Pool(cpu_count())
-    download_func = partial(download_images_parallel, filePath = filePath)
+    download_func = partial(download_images_parallel)
     results = pool.map(download_func, images_urls_list)
     pool.close()
     pool.join()
