@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+from numpy.core.fromnumeric import product
 from feature_extractor import FeatureExtractor
 from datetime import datetime
 from flask import Flask, request, render_template, jsonify, make_response
@@ -9,13 +10,14 @@ import json
 from image_util import download_images_parallel_starting_point as images_downloader
 from offline import extract_features_in_path
 import os
+import constants
 app = Flask(__name__)
 
 # Read image features
 fe = FeatureExtractor()
 features = []
 img_paths = []
-for feature_path in Path("./static/feature").glob("*.npy"):
+for feature_path in Path(constants.FEATURED).glob("*.npy"):
     features.append(np.load(feature_path))
     # img_paths.append(Path("./static/img") / (feature_path.stem))
     img_paths.append(feature_path.stem) #TODO change to product ID 
@@ -54,7 +56,7 @@ def detect():
         if 'image' in request_data:
             img_path = request_data['image'] #json path
             response = requests.get(img_path)
-
+            os.chdir(constants.CACHE_DIR)
             #TODO: Idea, rename files to cache imgs
             file = open("img.png", "rb+")
             file.write(response.content)
@@ -74,7 +76,12 @@ def detect():
             results = []
 
             for item in scores:
-                results.append(str(item[1]))
+                arr = str(item[1]).split('_')
+                results.append({
+                    "product_id": str(arr[0]),
+                    "color_id": str(arr[1]),
+                    "size_id": str(arr[2])
+                })
 
             response = make_response(
                 jsonify(results),
@@ -110,7 +117,9 @@ def train():
             images_downloader(request_data['images'])
             # os.chdir(os.getcwd()+"/static/img")
             #TODO: revisit this function
-            extract_features_in_path(os.getcwd())
+           
+            print(constants.INFERENCE_QUEUE_DIR)
+            extract_features_in_path(constants.INFERENCE_QUEUE_DIR)
 
             response = make_response(
                 jsonify({"training_status":"done"}),

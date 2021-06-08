@@ -5,6 +5,7 @@ from multiprocessing import Pool, cpu_count
 from functools import partial
 from io import BytesIO
 import shutil
+import constants
 
 
 def delete_directory_files(directory):
@@ -43,9 +44,8 @@ def download_images_parallel(product):
 
 def download_images_parallel_starting_point(images_urls_list=[]):
     # TODO: imrpove later
-    if (os.getcwd().split('/')[-1] != 'img'):
-        os.chdir(os.getcwd()+"/static/img")
-    print("dir changed to /img")
+    os.chdir(constants.INFERENCE_QUEUE_DIR)
+    print("dir changed to /inference")
     # filePath = os.path.dirname(os.path.abspath(__file__))
     # filePath = os.path.dirname(os.path.abspath(os.getcwd()))
     filePath = os.getcwdb()
