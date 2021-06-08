@@ -98,7 +98,8 @@ static/img/
 static/uploaded/
 static/feature/
 static/trained/
-static/pretrained/
+static/inference_queue/
+static/cache
 
 #vs code
 .vscode
