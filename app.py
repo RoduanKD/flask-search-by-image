@@ -28,8 +28,7 @@ def index():
 
         # Save query image
         img = Image.open(file.stream)  # PIL image
-        uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":",
-                                                                                    ".") + "_" + file.filename
+        uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":", ".") + "_" + file.filename
         img.save(uploaded_img_path)
 
         # Run search
@@ -48,56 +47,45 @@ def index():
 
 @app.route('/api/v1/detect', methods=['POST'])
 def detect():
-    request_data = request.get_json()
-    image_path = None
-    if request_data:
-        if 'image' in request_data:
-            img_path = request_data['image']
-            response = requests.get(img_path)
+    if (request.files['image']):
+        file = request.files['query_img']
 
-            file = open("img.png", "rb+")
-            file.write(response.content)
+        # Save query image
+        img = Image.open(file.stream)  # PIL image
+        # uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":", ".") + "_" + img
+        # img.save(uploaded_img_path)
 
-            # Save query image
-            img = Image.open(file)  # PIL image
-            # uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":", ".") + "_" + img
-            # img.save(uploaded_img_path)
+        # Run search
+        query = fe.extract(img)
+        # L2 distances to features
+        dists = []
+        for feature in features:
+            dists.append(feature - query)
+        dists = np.linalg.norm(features-query, axis=1)
+        ids = filter(lambda distance: distance > 0.7)
+        ids = np.argsort(dists)[:30] # Top 30 results
+        scores = [(dists[id], img_paths[id]) for id in ids]
 
-            # Run search
-            query = fe.extract(img)
-            # L2 distances to features
-            dists = np.linalg.norm(features-query, axis=1)
-            ids = np.argsort(dists)[:30]  # Top 30 results
-            scores = [(dists[id], img_paths[id]) for id in ids]
+        # Store results in a dictionary
+        results = []
 
-            # Store results in a dictionary
-            results = []
+        for item in scores:
+            results.append({
+                "filename": str(item[1]),
+                "uncertainty": str(item[0])
+            })
 
-            for item in scores:
-                results.append({
-                    "filename": str(item[1]),
-                    "uncertainty": str(item[0])
-                })
-
-            print(jsonify(results))
-            response = make_response(
-                jsonify(results),
-                200,
-            )
-            response.headers["Content-Type"] = "application/json"
-            return response
-
-        else:
-            response = make_response(
-                jsonify({"error": "Please use the image param in the body"}),
-                400,
-            )
-            response.headers["Content-Type"] = "application/json"
-            return response
+        print(jsonify(results))
+        response = make_response(
+            jsonify(results),
+            200,
+        )
+        response.headers["Content-Type"] = "application/json"
+        return response
 
     else:
         response = make_response(
-            jsonify({"error": "This endpoint accepts param named: image only,"}),
+            jsonify({"error": "Please use the image param in the body"}),
             400,
         )
         response.headers["Content-Type"] = "application/json"
