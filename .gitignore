@@ -101,7 +101,8 @@ static/feature/
 static/trained/
 static/inference_queue/
 static/cache
-.vscode/
 
 #vs code
 .vscode
+
+.vs
