@@ -22,4 +22,4 @@ def extract_features_in_path(saved_images_path):
     os.chdir(orgin_path)
 
 if __name__ == '__main__':
-    extract_features_in_path("C:\\dev\\workspace\\python\\sis\\static\\img\\")
+    extract_features_in_path("C:\\dev\\workspace\\python\\sis\\static\\uploaded\\")

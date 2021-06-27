@@ -1,3 +1,4 @@
+from typing import final
 import numpy as np
 from PIL import Image
 from numpy.core.fromnumeric import product
@@ -76,12 +77,15 @@ def detect():
             results = []
 
             for item in scores:
-                arr = str(item[1]).split('_')
-                results.append({
+                try:
+                    arr = str(item[1]).split('_')
+                    results.append({
                     "product_id": str(arr[0]),
                     "color_id": str(arr[1]),
                     "size_id": str(arr[2])
-                })
+                    })
+                except:
+                    print("Error: Image\t" + item[1] +  "is not following the convention")
 
             response = make_response(
                 jsonify(results),

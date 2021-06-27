@@ -30,7 +30,7 @@ if __name__=="__main__":
     ids = np.argsort(dists)[:30] # Top 30 results
     scores = [(dists[id], img_paths[id]) for id in ids]
 
-    # Store results in a dictionary
+    # Store results in a dictionaryض    
     results = []
 
     for item in scores:
