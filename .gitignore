@@ -95,8 +95,13 @@ ENV/
 
 # custom (waleed)
 static/img
-static/uploaded
-static/feature
+static/img/
+static/uploaded/
+static/feature/
+static/trained/
+static/inference_queue/
+static/cache
 .vscode/
+
 #vs code
 .vscode

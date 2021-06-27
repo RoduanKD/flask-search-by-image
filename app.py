@@ -1,5 +1,7 @@
+from typing import final
 import numpy as np
 from PIL import Image
+from numpy.core.fromnumeric import product
 from feature_extractor import FeatureExtractor
 from datetime import datetime
 from flask import Flask, request, render_template, jsonify, make_response
@@ -9,15 +11,17 @@ import json
 from image_util import download_images_parallel_starting_point as images_downloader
 from offline import extract_features_in_path
 import os
+import constants
 app = Flask(__name__)
 
 # Read image features
 fe = FeatureExtractor()
 features = []
 img_paths = []
-for feature_path in Path("./static/feature").glob("*.npy"):
+for feature_path in Path(constants.FEATURED).glob("*.npy"):
     features.append(np.load(feature_path))
-    img_paths.append(Path("./static/img") / (feature_path.stem + ".jpg"))
+    # img_paths.append(Path("./static/img") / (feature_path.stem))
+    img_paths.append(feature_path.stem) #TODO change to product ID 
 features = np.array(features)
 
 
@@ -43,7 +47,6 @@ def index():
                                scores=scores)
     else:
         return render_template('index.html')
-
 
 @app.route('/api/v1/detect', methods=['POST'])
 def detect():
@@ -96,14 +99,15 @@ def detect():
 @app.route('/api/v1/train', methods=['POST'])
 def train():
     request_data = request.get_json()
-    image_path = None
     if request_data:
         if 'images' in request_data:
             #1 - download_images
             images_downloader(request_data['images'])
             # os.chdir(os.getcwd()+"/static/img")
             #TODO: revisit this function
-            # extract_features_in_path(filePath = os.getcwdb())
+           
+            print(constants.INFERENCE_QUEUE_DIR)
+            extract_features_in_path(constants.INFERENCE_QUEUE_DIR)
 
             response = make_response(
                 jsonify({"training_status":"done"}),
@@ -137,4 +141,4 @@ def not_found(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='127.0.0.1')
+    app.run(debug=False, host='127.0.0.1')
