@@ -50,8 +50,10 @@ def index():
 
 @app.route('/api/v1/detect', methods=['POST'])
 def detect():
+    print('just got started')
     if (request.files['image']):
-        file = request.files['query_img']
+        print('I am in')
+        file = request.files['image']
 
         # Save query image
         img = Image.open(file.stream)  # PIL image
@@ -60,12 +62,13 @@ def detect():
 
         # Run search
         query = fe.extract(img)
+        print('there is a file')
         # L2 distances to features
         dists = []
         for feature in features:
             dists.append(feature - query)
         dists = np.linalg.norm(features-query, axis=1)
-        ids = filter(lambda distance: distance > 0.7)
+        ids = filter(lambda distance: distance > 0.7, dists)
         ids = np.argsort(dists)[:30] # Top 30 results
         scores = [(dists[id], img_paths[id]) for id in ids]
 
@@ -85,8 +88,8 @@ def detect():
         )
         response.headers["Content-Type"] = "application/json"
         return response
-
     else:
+        print('there is no file')
         response = make_response(
             jsonify({"error": "Please use the image param in the body"}),
             400,
