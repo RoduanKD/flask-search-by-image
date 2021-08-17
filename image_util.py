@@ -24,9 +24,12 @@ def delete_directory_files(directory):
 def download_images_parallel(product):
     broken_images = []
     try:
-        response = requests.get(product['image'],stream=True)
+        print(product['image'])
+        response = requests.get(product['image'])
+        print('reponse is done here')
         if response.status_code == 200:
-            file_name = product['product_id'] + '_' + product['color_id'] + '_' + product['size_id'] + '_' + str(time.time()).split('.')[0]
+            print(product['image'] + ' Was downloaded with code 200')
+            file_name = product['product_id'] + '_' + str(time.time()).split('.')[0]
             # This command below will allow us to write the data to a file as binary:
             with open(file_name, 'wb+') as f:
                 for chunk in response:
@@ -34,10 +37,9 @@ def download_images_parallel(product):
                     
             # print(" Downloaded {} ".format(file_name))
         else:
-        # We will write all of the images back to the broken_images list:
+            # We will write all of the images back to the broken_images list:
             broken_images.append(product['image'])
-            
-               
+            print('the image did never load I am in else')      
     except Exception as e:
         print(e)
         
@@ -65,8 +67,8 @@ def download_images_parallel_starting_point(images_urls_list=[]):
              
     #        ]
 
-    print("There are {} CPUs on this machine ".format(cpu_count()))
-    pool = Pool(cpu_count())
+    print("There are {} CPUs on this machine ".format(1))
+    pool = Pool(1)
     download_func = partial(download_images_parallel)
     results = pool.map(download_func, images_urls_list)
     pool.close()

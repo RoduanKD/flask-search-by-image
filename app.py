@@ -99,7 +99,7 @@ def detect():
 
 
 #NOT DONE
-@app.route('/api/v1/train', methods=['POST'])
+@app.route('/api/v1/inference', methods=['POST'])
 def train():
     request_data = request.get_json()
     if request_data:
