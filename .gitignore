@@ -106,3 +106,5 @@ static/cache
 .vscode
 
 .vs
+
+meta-data-files

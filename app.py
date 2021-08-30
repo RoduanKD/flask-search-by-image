@@ -1,17 +1,16 @@
-from typing import final
+import os
+import pathlib
 import numpy as np
 from PIL import Image
-from numpy.core.fromnumeric import product
 from feature_extractor import FeatureExtractor
 from datetime import datetime
 from flask import Flask, request, render_template, jsonify, make_response
 from pathlib import Path
-import requests
-import json
 from image_util import download_images_parallel_starting_point as images_downloader
 from offline import extract_features_in_path
-import os
 import constants
+from DeepImageSearch import Index,LoadData,SearchImage
+
 app = Flask(__name__)
 
 # Read image features
@@ -59,26 +58,15 @@ def detect():
         img = Image.open(file.stream)  # PIL image
         # uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":", ".") + "_" + img
         # img.save(uploaded_img_path)
-
-        # Run search
-        query = fe.extract(img)
-        print('there is a file')
-        # L2 distances to features
-        dists = []
-        for feature in features:
-            dists.append(feature - query)
-        dists = np.linalg.norm(features-query, axis=1)
-        ids = filter(lambda distance: distance > 0.7, dists)
-        ids = np.argsort(dists)[:30] # Top 30 results
-        scores = [(dists[id], img_paths[id]) for id in ids]
+        scores = SearchImage().get_similar_images(image_path = file.stream,number_of_images=5)
+        print(scores)
 
         # Store results in a dictionary
         results = []
 
-        for item in scores:
+        for key in scores:
             results.append({
-                "filename": str(item[1]),
-                "uncertainty": str(item[0])
+                "filename": str(scores[key]).split('\\')[-1]
             })
 
         print(jsonify(results))
@@ -97,8 +85,6 @@ def detect():
         response.headers["Content-Type"] = "application/json"
         return response
 
-
-#NOT DONE
 @app.route('/api/v1/inference', methods=['POST'])
 def train():
     request_data = request.get_json()
@@ -106,11 +92,12 @@ def train():
         if 'images' in request_data:
             #1 - download_images
             images_downloader(request_data['images'])
-            # os.chdir(os.getcwd()+"/static/img")
-            #TODO: revisit this function
-           
             print(constants.INFERENCE_QUEUE_DIR)
-            extract_features_in_path(constants.INFERENCE_QUEUE_DIR)
+            os.chdir(pathlib.Path(__file__).parent.resolve())
+            if (os.path.exists('meta-data-files')):
+                os.rmdir('meta-data-files')
+            image_list = LoadData().from_folder(folder_list = [constants.INFERENCE_QUEUE_DIR])
+            Index(image_list).Start()
 
             response = make_response(
                 jsonify({"training_status":"done"}),
@@ -134,7 +121,6 @@ def train():
                 )
             response.headers["Content-Type"] = "application/json"
             return response
-
 
 @app.errorhandler(404)
 def not_found(e):
