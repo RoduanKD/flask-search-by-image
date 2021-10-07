@@ -10,6 +10,7 @@ from image_util import download_images_parallel_starting_point as images_downloa
 from offline import extract_features_in_path
 import constants
 from DeepImageSearch import Index,LoadData,SearchImage
+import shutil
 
 app = Flask(__name__)
 
@@ -95,7 +96,8 @@ def train():
             print(constants.INFERENCE_QUEUE_DIR)
             os.chdir(pathlib.Path(__file__).parent.resolve())
             if (os.path.exists('meta-data-files')):
-                os.rmdir('meta-data-files')
+                shutil.rmtree('meta-data-files', ignore_errors=True)
+                # os.rmdir('meta-data-files')
             image_list = LoadData().from_folder(folder_list = [constants.INFERENCE_QUEUE_DIR])
             Index(image_list).Start()
 
