@@ -94,6 +94,7 @@ def train():
             #1 - download_images
             images_downloader(request_data['images'])
             print(constants.INFERENCE_QUEUE_DIR)
+            # cloth segmentation goes here
             os.chdir(pathlib.Path(__file__).parent.resolve())
             if (os.path.exists('meta-data-files')):
                 shutil.rmtree('meta-data-files', ignore_errors=True)
